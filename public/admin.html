@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STAS Admin</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="app"></div>
+<script src="/common.js"></script>
+<script>
+const app = document.getElementById('app');
+let pin = sessionStorage.getItem('pin') || '';
+let es = null;
+let lastError = '';
+
+async function act(action, args) {
+  const res = await post('/api/admin', { action, ...args }, { 'x-pin': pin });
+  lastError = res.error || '';
+  const box = document.getElementById('error');
+  if (box) box.textContent = lastError;
+}
+
+const btn = (label, onclick, cls = '', disabled = false) =>
+  h('button', { class: 'btn ' + cls, onclick, disabled, type: 'button' }, label);
+
+function gate(message) {
+  const input = h('input', { id: 'pin', type: 'password', autocomplete: 'off', required: true });
+  app.replaceChildren(h('form', {
+    class: 'gate',
+    onsubmit(e) {
+      e.preventDefault();
+      pin = input.value.trim();
+      sessionStorage.setItem('pin', pin);
+      connect();
+    },
+  },
+    h('h1', { class: 'logo' }, 'STAS ', h('span', null, 'ADMIN')),
+    h('label', { htmlFor: 'pin' }, 'Admin PIN (shown in the server window)'),
+    input,
+    h('button', { class: 'btn on' }, 'Enter'),
+    h('p', { class: 'error', role: 'alert' }, message)));
+  input.focus();
+}
+
+function connect() {
+  if (es) es.close();
+  es = live('?pin=' + encodeURIComponent(pin), (v) => {
+    if (!v.admin) {
+      es.close();
+      sessionStorage.removeItem('pin');
+      return gate(pin ? 'Wrong PIN' : '');
+    }
+    render(v);
+  });
+}
+
+function clueCard(v) {
+  const c = v.current;
+  const name = (id) => v.players.find((p) => p.id === id)?.name ?? 'Unknown';
+  const head = h('h2', null, `${c.jackpot ? 'STAS Jackpot · ' : ''}${c.category}${c.jackpot ? '' : ' · ' + c.value}`);
+  const texts = [h('p', { class: 'clue-text' }, c.clue), h('p', { class: 'answer-text' }, 'Answer: ', c.answer)];
+  const finish = h('div', { class: 'row' },
+    !c.revealed && c.phase === 'clue' && btn('Reveal answer', () => act('reveal')),
+    btn('Back to board', () => act('close'), c.revealed ? 'on' : ''),
+    btn('Cancel, keep tile', () => act('cancel')));
+
+  if (c.phase === 'wager') {
+    return h('section', { class: 'card' }, head, ...texts,
+      h('p', null, 'Who is betting?'),
+      h('div', { class: 'row' }, v.players.map((p) =>
+        btn(`${p.name} (${p.score})`, () => act('jackpotPlayer', { playerId: p.id }), p.id === c.playerId ? 'on' : ''))),
+      c.playerId && h('p', { class: 'muted' }, `${name(c.playerId)} can bet on their phone, 0 to ${c.max}. Or enter it here:`),
+      c.playerId && h('div', { class: 'row' },
+        btn('Enter bet', () => {
+          const raw = prompt(`Bet for ${name(c.playerId)} (0 to ${c.max})`);
+          if (raw !== null) act('wager', { amount: Number(raw) });
+        }),
+        btn(`All in (${c.max})`, () => act('wager', { amount: c.max }))),
+      finish);
+  }
+
+  if (c.jackpot) {
+    return h('section', { class: 'card' }, head, ...texts,
+      h('p', { class: 'up-now' }, `${name(c.playerId)} bet ${c.wager}`),
+      h('div', { class: 'row' },
+        btn(`Correct +${c.wager}`, () => act('correct'), 'good', c.revealed),
+        btn(`Wrong -${c.wager}`, () => act('wrong'), 'bad', c.revealed)),
+      finish);
+  }
+
+  const up = c.buzzes[0];
+  return h('section', { class: 'card' }, head, ...texts,
+    h('div', { class: 'row' },
+      btn(c.buzzOpen ? 'Close buzzers' : 'Open buzzers', () => act('buzzers', { open: !c.buzzOpen }), c.buzzOpen ? 'on' : '', c.revealed)),
+    c.buzzes.length
+      ? h('ol', null, c.buzzes.map((id, i) => h('li', { class: i === 0 ? 'up-now' : '' }, name(id) + (i === 0 ? ' is answering' : ''))))
+      : h('p', { class: 'muted' }, c.revealed ? 'Clue finished.' : c.buzzOpen ? 'Waiting for a buzz…' : 'Read the clue, then open buzzers.'),
+    c.locked.length > 0 && h('p', { class: 'muted' }, 'Locked out: ', c.locked.map(name).join(', ')),
+    h('div', { class: 'row' },
+      btn(`Correct +${c.value}`, () => act('correct'), 'good', !up || c.revealed),
+      btn(`Wrong -${c.value}`, () => act('wrong'), 'bad', !up || c.revealed)),
+    finish);
+}
+
+function boardCard(v) {
+  const tile = (ci, i) => {
+    const cell = v.categories[ci].cells[i];
+    return h('button', {
+      class: 'tile' + (cell.used ? ' used' : '') + (cell.jackpot ? ' jackpot' : ''),
+      type: 'button',
+      title: `${cell.clue} / ${cell.answer}`,
+      disabled: Boolean(v.current),
+      onclick: () => act('open', { cat: ci, idx: i }),
+    }, String(cell.value), cell.jackpot && h('small', null, 'JACKPOT'));
+  };
+  return h('section', { class: 'card' },
+    h('div', { class: 'row' }, Array.from({ length: v.rounds }, (_, r) =>
+      btn(`Board ${r + 1}${r ? ' (double)' : ''}`, () => act('round', { round: r }), r === v.round ? 'on' : '', Boolean(v.current)))),
+    h('div', { class: 'board' },
+      v.categories.map((c) => h('div', { class: 'cat' }, c.name)),
+      [0, 1, 2, 3, 4].flatMap((i) => v.categories.map((_, ci) => tile(ci, i)))),
+    h('p', { class: 'muted' }, 'Gold outline is the jackpot, hidden from everyone else. A used tile can be reopened.'));
+}
+
+function playersCard(v) {
+  return h('section', { class: 'card' },
+    h('h2', null, `Players (${v.players.length})`),
+    h('p', { class: 'muted' }, 'Join: ', v.joinUrl),
+    v.players.map((p) => h('div', { class: 'pl' },
+      h('div', { class: 'head' }, h('span', null, p.name + (p.id === v.control ? ' · picks next' : '')), h('b', null, p.score.toLocaleString())),
+      h('div', { class: 'row' },
+        btn('-100', () => act('score', { playerId: p.id, score: p.score - 100 }), 'small'),
+        btn('+100', () => act('score', { playerId: p.id, score: p.score + 100 }), 'small'),
+        btn('Set', () => {
+          const raw = prompt(`Score for ${p.name}`, p.score);
+          if (raw !== null) act('score', { playerId: p.id, score: Number(raw) });
+        }, 'small'),
+        btn('Remove', () => {
+          if (confirm(`Remove ${p.name}?`)) act('remove', { playerId: p.id });
+        }, 'small')))),
+    h('div', { class: 'row' }, btn('New game', () => {
+      if (confirm('Reset all scores and tiles, and move the jackpots? Players stay joined.')) act('newGame');
+    }, 'bad')));
+}
+
+function render(v) {
+  app.replaceChildren(h('div', { class: 'admin' },
+    h('header', null,
+      h('h1', { class: 'logo' }, 'STAS ', h('span', null, 'ADMIN')),
+      h('a', { href: '/', target: '_blank', style: 'color:inherit' }, 'Open main screen')),
+    h('div', { class: 'col' },
+      h('p', { class: 'error', id: 'error', role: 'alert' }, lastError),
+      v.current && clueCard(v),
+      boardCard(v)),
+    playersCard(v)));
+}
+
+pin ? connect() : gate('');
+</script>
+</body>
+</html>

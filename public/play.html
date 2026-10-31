@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0d1250">
+<title>STAS Buzzer</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="app"></div>
+<script src="/common.js"></script>
+<script>
+const app = document.getElementById('app');
+let token = localStorage.getItem('token') || '';
+let es = null;
+let lastKey = null;
+
+function connect() {
+  if (es) es.close();
+  lastKey = null;
+  es = live(token ? '?token=' + encodeURIComponent(token) : '', (v) => {
+    if (!v.me) {
+      token = '';
+      localStorage.removeItem('token');
+      if (lastKey !== 'join') joinForm();
+      lastKey = 'join';
+      return;
+    }
+    const me = v.players.find((p) => p.id === v.me);
+    const screen = describe(v);
+    // Only redraw on change, so a state update never wipes a half-typed bet.
+    const key = JSON.stringify([me.name, me.score, screen]);
+    if (key !== lastKey) render(me, screen);
+    lastKey = key;
+  });
+}
+
+function joinForm() {
+  const input = h('input', { id: 'name', maxLength: 20, required: true, autocomplete: 'off' });
+  const error = h('p', { class: 'error', role: 'alert' });
+  app.replaceChildren(h('form', {
+    class: 'gate',
+    async onsubmit(e) {
+      e.preventDefault();
+      const res = await post('/api/join', { name: input.value });
+      if (res.error) {
+        error.textContent = res.error;
+        return;
+      }
+      token = res.token;
+      localStorage.setItem('token', token);
+      connect();
+    },
+  },
+    h('h1', { class: 'logo' }, 'STAS ', h('span', null, 'JEOPARDY')),
+    h('label', { htmlFor: 'name' }, 'Your name'),
+    input,
+    h('button', { class: 'btn on' }, 'Join'),
+    error));
+}
+
+function describe(v) {
+  const c = v.current;
+  if (!c) return { title: 'Eyes on the board' };
+  const owner = v.players.find((p) => p.id === c.playerId)?.name;
+  if (c.phase === 'wager') {
+    if (c.playerId === v.me) return { wager: c.max, category: c.category };
+    return { title: 'STAS JACKPOT', gold: true, sub: owner ? `${owner} is betting` : 'Waiting' };
+  }
+  if (c.revealed) return { title: 'Answer revealed', sub: 'Next clue coming up' };
+  if (c.jackpot) {
+    return c.playerId === v.me
+      ? { title: 'Your jackpot!', gold: true, sub: `Answer out loud. You bet ${c.wager.toLocaleString()}.` }
+      : { title: 'STAS JACKPOT', gold: true, sub: `${owner} is answering` };
+  }
+  const pos = c.buzzes.indexOf(v.me);
+  if (pos === 0) return { title: "You're up!", gold: true, sub: 'Answer out loud' };
+  if (pos > 0) return { title: `#${pos + 1} in line`, sub: 'You answer if they miss' };
+  if (c.locked.includes(v.me)) return { title: 'Locked out', sub: 'Wait for the next clue' };
+  return { buzz: c.buzzOpen };
+}
+
+function buzz() {
+  if (navigator.vibrate) navigator.vibrate(40);
+  post('/api/buzz', { token });
+}
+
+function render(me, s) {
+  let body;
+  if ('buzz' in s) {
+    body = [h('button', { class: 'buzz', type: 'button', disabled: !s.buzz, onpointerdown: buzz, onclick: (e) => { if (!e.detail) buzz(); } }, s.buzz ? 'BUZZ!' : 'WAIT')];
+  } else if ('wager' in s) {
+    const input = h('input', { id: 'bet', type: 'number', inputMode: 'numeric', min: 0, max: s.wager, step: 1, required: true });
+    const error = h('p', { class: 'error', role: 'alert' });
+    const send = async (amount) => {
+      const res = await post('/api/wager', { token, amount });
+      if (res.error) error.textContent = res.error;
+    };
+    body = [
+      h('p', { class: 'title gold' }, 'STAS JACKPOT'),
+      h('p', { class: 'sub' }, `${s.category}. Bet 0 to ${s.wager.toLocaleString()}.`),
+      h('form', {
+        class: 'wager',
+        onsubmit(e) {
+          e.preventDefault();
+          send(Number(input.value));
+        },
+      },
+        h('label', { htmlFor: 'bet' }, 'Your bet'),
+        input,
+        h('button', { class: 'btn on' }, 'Lock in bet'),
+        h('button', { class: 'btn', type: 'button', onclick: () => send(s.wager) }, `All in (${s.wager.toLocaleString()})`),
+        error),
+    ];
+  } else {
+    body = [h('p', { class: 'title' + (s.gold ? ' gold' : '') }, s.title), s.sub && h('p', { class: 'sub' }, s.sub)];
+  }
+  app.replaceChildren(h('div', { class: 'phone' },
+    h('header', null, h('span', null, me.name), h('strong', null, me.score.toLocaleString())),
+    h('div', { class: 'body' }, body)));
+}
+
+connect();
+</script>
+</body>
+</html>

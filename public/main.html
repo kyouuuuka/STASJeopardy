@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STAS Jeopardy</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="main">
+  <header>
+    <h1 class="logo">STAS <span>JEOPARDY</span></h1>
+    <div class="round" id="round"></div>
+    <div class="head-right">
+      <button class="btn fs" id="fs" type="button" hidden>Full screen</button>
+    </div>
+  </header>
+  <main class="stage" id="stage"></main>
+  <footer class="scores" id="scores" aria-label="Scores"></footer>
+</div>
+<script src="/common.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+let lastClue = null;
+
+$('fs').hidden = !document.fullscreenEnabled;
+$('fs').onclick = () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen());
+document.onfullscreenchange = () => {
+  $('fs').textContent = document.fullscreenElement ? 'Exit full screen' : 'Full screen';
+};
+
+function boardEl(v) {
+  const rows = [0, 1, 2, 3, 4].flatMap((i) => v.categories.map((c) => {
+    const cell = c.cells[i];
+    return h('div', { class: 'tile' + (cell.used ? ' used' : '') }, cell.used ? '' : String(cell.value));
+  }));
+  return h('div', { class: 'board' }, v.categories.map((c) => h('div', { class: 'cat' }, c.name)), rows);
+}
+
+function overlayEl(v) {
+  const c = v.current;
+  const name = (id) => v.players.find((p) => p.id === id)?.name;
+  const key = `${v.round}-${c.cat}-${c.idx}-${c.phase}`;
+  const cls = 'overlay' + (c.jackpot ? ' jackpot' : '') + (key !== lastClue ? ' enter' : '');
+  lastClue = key;
+
+  if (c.phase === 'wager') {
+    return h('div', { class: cls },
+      h('div', { class: 'splash' }, 'STAS JACKPOT'),
+      h('div', { class: 'meta' }, c.category),
+      h('div', { class: 'status' }, c.playerId
+        ? `${name(c.playerId)} can bet up to ${c.max.toLocaleString()}`
+        : 'Who is betting?'));
+  }
+
+  let status = null;
+  if (c.jackpot) {
+    status = h('div', { class: 'status' }, `${name(c.playerId) ?? 'Player'} bet ${c.wager.toLocaleString()}`);
+  } else if (!c.revealed) {
+    if (c.buzzes.length) status = h('div', { class: 'status live' }, `${name(c.buzzes[0])} is answering`);
+    else if (c.buzzOpen) status = h('div', { class: 'status live' }, 'Buzzers open');
+  }
+  return h('div', { class: cls },
+    h('div', { class: 'meta' }, `${c.jackpot ? 'STAS Jackpot · ' : ''}${c.category}${c.jackpot ? '' : ' · ' + c.value}`),
+    h('div', { class: 'clue' }, c.clue),
+    c.revealed && h('div', { class: 'answer' }, c.answer),
+    status);
+}
+
+live('', (v) => {
+  $('round').replaceChildren(`Board ${v.round + 1}`, v.round > 0 ? h('em', null, ' · Double points') : '');
+  if (!v.current) lastClue = null;
+  $('stage').replaceChildren(v.current ? overlayEl(v) : boardEl(v));
+  const c = v.current;
+  $('scores').replaceChildren(...[scoreboard(v, c && (c.jackpot ? c.playerId : c.buzzes[0]))].flat());
+});
+</script>
+</body>
+</html>

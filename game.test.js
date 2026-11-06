@@ -32,6 +32,10 @@ test('full game flow', async (t) => {
     server.once('exit', () => reject(new Error('server failed to start')));
   });
 
+  for (const bad of ['/images/..%2Fserver.js', '/images/..%2Fboard.json', '/images/%E0']) {
+    assert.equal((await fetch(base + bad)).status, 404, bad);
+  }
+
   const a = await post('/api/join', { name: 'Ana' });
   const b = await post('/api/join', { name: 'Ben' });
   assert.equal((await post('/api/join', { name: 'ana' })).status, 409);

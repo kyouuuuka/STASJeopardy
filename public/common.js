@@ -23,6 +23,9 @@ async function post(url, body, headers) {
   }
 }
 
+// A clue image is a file name in images/, or a full web address.
+const imgSrc = (name) => (/^https?:\/\//.test(name) ? name : '/images/' + encodeURIComponent(name));
+
 function live(query, onView) {
   const es = new EventSource('/events' + query);
   es.onopen = () => document.body.classList.remove('offline');

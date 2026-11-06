@@ -15,7 +15,18 @@ const PAGES = {
   '/style.css': 'style.css',
   '/common.js': 'common.js',
 };
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript' };
+const IMAGES = path.join(__dirname, 'images');
+const TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css',
+  '.js': 'text/javascript',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.webp': 'image/webp',
+  '.svg': 'image/svg+xml',
+};
 
 const board = JSON.parse(fs.readFileSync(path.join(__dirname, 'board.json'), 'utf8')).rounds;
 if (board.length !== 2 || board.some((r) => r.length !== 5 || r.some((c) => c.clues.length !== 5))) {
@@ -93,6 +104,8 @@ function view({ admin, token }) {
       max: player(c.playerId) ? maxWager(player(c.playerId).score) : 0,
       clue: admin || c.phase === 'clue' ? board[round][c.cat].clues[c.idx].clue : undefined,
       answer: admin || c.revealed ? board[round][c.cat].clues[c.idx].answer : undefined,
+      image: admin || c.phase === 'clue' ? board[round][c.cat].clues[c.idx].image : undefined,
+      answerImage: admin || c.revealed ? board[round][c.cat].clues[c.idx].answerImage : undefined,
     },
   };
 }
@@ -301,6 +314,23 @@ const server = http.createServer(async (req, res) => {
     clients.add(client);
     req.on('close', () => clients.delete(client));
     send(client);
+    return;
+  }
+
+  if (url.pathname.startsWith('/images/')) {
+    // basename keeps requests inside images/.
+    // ponytail: anyone who guesses a file name can open it early; use unguessable names if that matters.
+    let name;
+    try {
+      name = path.basename(decodeURIComponent(url.pathname));
+    } catch {
+      name = '';
+    }
+    const type = Object.hasOwn(TYPES, path.extname(name).toLowerCase()) && TYPES[path.extname(name).toLowerCase()];
+    fs.readFile(path.join(IMAGES, name), (err, data) => {
+      if (err || !type?.startsWith('image/')) return res.writeHead(404).end('Not found');
+      res.writeHead(200, { 'Content-Type': type, 'Cache-Control': 'no-cache' }).end(data);
+    });
     return;
   }
 

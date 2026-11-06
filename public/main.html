@@ -22,6 +22,7 @@
 <script>
 const $ = (id) => document.getElementById(id);
 let lastClue = null;
+let lastImg = null;
 
 $('fs').hidden = !document.fullscreenEnabled;
 $('fs').onclick = () => (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen());
@@ -60,16 +61,21 @@ function overlayEl(v) {
     if (c.buzzes.length) status = h('div', { class: 'status live' }, `${name(c.buzzes[0])} is answering`);
     else if (c.buzzOpen) status = h('div', { class: 'status live' }, 'Buzzers open');
   }
-  return h('div', { class: cls },
+  // On reveal, an answer picture takes the clue picture's place.
+  const img = (c.revealed && c.answerImage) || c.image;
+  const swapped = img && lastImg && img !== lastImg && !cls.includes('enter');
+  lastImg = img;
+  return h('div', { class: cls + (img ? ' has-image' : '') },
     h('div', { class: 'meta' }, `${c.jackpot ? 'STAS Jackpot · ' : ''}${c.category}${c.jackpot ? '' : ' · ' + c.value}`),
-    h('div', { class: 'clue' }, c.clue),
+    img && h('img', { class: 'clue-img' + (swapped ? ' swap' : ''), src: imgSrc(img), alt: img === c.image ? 'Clue picture' : 'Answer picture' }),
+    c.clue && h('div', { class: 'clue' }, c.clue),
     c.revealed && h('div', { class: 'answer' }, c.answer),
     status);
 }
 
 live('', (v) => {
   $('round').replaceChildren(`Board ${v.round + 1}`, v.round > 0 ? h('em', null, ' · Double points') : '');
-  if (!v.current) lastClue = null;
+  if (!v.current) lastClue = lastImg = null;
   $('stage').replaceChildren(v.current ? overlayEl(v) : boardEl(v));
   const c = v.current;
   $('scores').replaceChildren(...[scoreboard(v, c && (c.jackpot ? c.playerId : c.buzzes[0]))].flat());

@@ -60,14 +60,22 @@ function clueCard(v) {
   const c = v.current;
   const name = (id) => v.players.find((p) => p.id === id)?.name ?? 'Unknown';
   const head = h('h2', null, `${c.jackpot ? 'STAS Jackpot · ' : ''}${c.category}${c.jackpot ? '' : ' · ' + c.value}`);
-  const texts = [h('p', { class: 'clue-text' }, c.clue), h('p', { class: 'answer-text' }, 'Answer: ', c.answer)];
+  const fig = (label, src) => h('figure', { class: 'pic' }, h('img', { src: imgSrc(src), alt: label + ' picture' }), h('figcaption', null, label));
+  const pics = (c.image || c.answerImage) && h('div', { class: 'pics' }, c.image && fig('Clue', c.image), c.answerImage && fig('Answer', c.answerImage));
+  // Pictures on the left, clue text and controls on the right.
+  const card = (...controls) => h('section', { class: 'card' }, head,
+    h('div', { class: 'clue-layout' + (pics ? ' with-pics' : '') }, pics,
+      h('div', { class: 'clue-side' },
+        c.clue && h('p', { class: 'clue-text' }, c.clue),
+        h('p', { class: 'answer-text' }, 'Answer: ', c.answer),
+        ...controls)));
   const finish = h('div', { class: 'row' },
     !c.revealed && c.phase === 'clue' && btn('Reveal answer', () => act('reveal')),
     btn('Back to board', () => act('close'), c.revealed ? 'on' : ''),
     btn('Cancel, keep tile', () => act('cancel')));
 
   if (c.phase === 'wager') {
-    return h('section', { class: 'card' }, head, ...texts,
+    return card(
       h('p', null, 'Who is betting?'),
       h('div', { class: 'row' }, v.players.map((p) =>
         btn(`${p.name} (${p.score})`, () => act('jackpotPlayer', { playerId: p.id }), p.id === c.playerId ? 'on' : ''))),
@@ -82,7 +90,7 @@ function clueCard(v) {
   }
 
   if (c.jackpot) {
-    return h('section', { class: 'card' }, head, ...texts,
+    return card(
       h('p', { class: 'up-now' }, `${name(c.playerId)} bet ${c.wager}`),
       h('div', { class: 'row' },
         btn(`Correct +${c.wager}`, () => act('correct'), 'good', c.revealed),
@@ -91,7 +99,7 @@ function clueCard(v) {
   }
 
   const up = c.buzzes[0];
-  return h('section', { class: 'card' }, head, ...texts,
+  return card(
     h('div', { class: 'row' },
       btn(c.buzzOpen ? 'Close buzzers' : 'Open buzzers', () => act('buzzers', { open: !c.buzzOpen }), c.buzzOpen ? 'on' : '', c.revealed)),
     c.buzzes.length

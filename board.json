@@ -2,53 +2,53 @@
   "rounds": [
     [
       {
-        "name": "Category 1",
+        "name": "Minecraft Mobs",
         "clues": [
-          {"clue":"Board 1 clue for category 1, row 1","answer":"Answer 1-1-1"},
-          {"clue":"Board 1 clue for category 1, row 2","answer":"Answer 1-1-2"},
-          {"clue":"Board 1 clue for category 1, row 3","answer":"Answer 1-1-3"},
-          {"clue":"Board 1 clue for category 1, row 4","answer":"Answer 1-1-4"},
-          {"clue":"Board 1 clue for category 1, row 5","answer":"Answer 1-1-5"}
+          {"clue":"","image":"COW_SHADOW.jpg","answer":"Cow","answerImage":"COW.png"},
+          {"clue":"","image":"ENDERMAN_SHADOW.jpg","answer":"Enderman","answerImage":"ENDERMAN.png"},
+          {"clue":"","image":"GHAST_SHADOW.jpg","answer":"Ghast","answerImage":"GHAST.webp"},
+          {"clue":"","image":"IRON_GOLEM_SHADOW.jpg","answer":"Iron Golem","answerImage":"IRON_GOLEM.webp"},
+          {"clue":"","image":"STRIDER_SHADOW.jpg","answer":"Strider","answerImage":"STRIDER.jpg"}
         ]
       },
       {
         "name": "Category 2",
         "clues": [
-          {"clue":"Board 1 clue for category 2, row 1","answer":"Answer 1-2-1"},
-          {"clue":"Board 1 clue for category 2, row 2","answer":"Answer 1-2-2"},
-          {"clue":"Board 1 clue for category 2, row 3","answer":"Answer 1-2-3"},
-          {"clue":"Board 1 clue for category 2, row 4","answer":"Answer 1-2-4"},
-          {"clue":"Board 1 clue for category 2, row 5","answer":"Answer 1-2-5"}
+          {"clue":"Board 1 clue for category 2, row 1","image":"","answer":"Answer 1-2-1","answerImage":""},
+          {"clue":"Board 1 clue for category 2, row 2","image":"","answer":"Answer 1-2-2","answerImage":""},
+          {"clue":"Board 1 clue for category 2, row 3","image":"","answer":"Answer 1-2-3","answerImage":""},
+          {"clue":"Board 1 clue for category 2, row 4","image":"","answer":"Answer 1-2-4","answerImage":""},
+          {"clue":"Board 1 clue for category 2, row 5","image":"","answer":"Answer 1-2-5","answerImage":""}
         ]
       },
       {
         "name": "Category 3",
         "clues": [
-          {"clue":"Board 1 clue for category 3, row 1","answer":"Answer 1-3-1"},
-          {"clue":"Board 1 clue for category 3, row 2","answer":"Answer 1-3-2"},
-          {"clue":"Board 1 clue for category 3, row 3","answer":"Answer 1-3-3"},
-          {"clue":"Board 1 clue for category 3, row 4","answer":"Answer 1-3-4"},
-          {"clue":"Board 1 clue for category 3, row 5","answer":"Answer 1-3-5"}
+          {"clue":"Board 1 clue for category 3, row 1","image":"","answer":"Answer 1-3-1","answerImage":""},
+          {"clue":"Board 1 clue for category 3, row 2","image":"","answer":"Answer 1-3-2","answerImage":""},
+          {"clue":"Board 1 clue for category 3, row 3","image":"","answer":"Answer 1-3-3","answerImage":""},
+          {"clue":"Board 1 clue for category 3, row 4","image":"","answer":"Answer 1-3-4","answerImage":""},
+          {"clue":"Board 1 clue for category 3, row 5","image":"","answer":"Answer 1-3-5","answerImage":""}
         ]
       },
       {
         "name": "Category 4",
         "clues": [
-          {"clue":"Board 1 clue for category 4, row 1","answer":"Answer 1-4-1"},
-          {"clue":"Board 1 clue for category 4, row 2","answer":"Answer 1-4-2"},
-          {"clue":"Board 1 clue for category 4, row 3","answer":"Answer 1-4-3"},
-          {"clue":"Board 1 clue for category 4, row 4","answer":"Answer 1-4-4"},
-          {"clue":"Board 1 clue for category 4, row 5","answer":"Answer 1-4-5"}
+          {"clue":"Board 1 clue for category 4, row 1","image":"","answer":"Answer 1-4-1","answerImage":""},
+          {"clue":"Board 1 clue for category 4, row 2","image":"","answer":"Answer 1-4-2","answerImage":""},
+          {"clue":"Board 1 clue for category 4, row 3","image":"","answer":"Answer 1-4-3","answerImage":""},
+          {"clue":"Board 1 clue for category 4, row 4","image":"","answer":"Answer 1-4-4","answerImage":""},
+          {"clue":"Board 1 clue for category 4, row 5","image":"","answer":"Answer 1-4-5","answerImage":""}
         ]
       },
       {
         "name": "Category 5",
         "clues": [
-          {"clue":"Board 1 clue for category 5, row 1","answer":"Answer 1-5-1"},
-          {"clue":"Board 1 clue for category 5, row 2","answer":"Answer 1-5-2"},
-          {"clue":"Board 1 clue for category 5, row 3","answer":"Answer 1-5-3"},
-          {"clue":"Board 1 clue for category 5, row 4","answer":"Answer 1-5-4"},
-          {"clue":"Board 1 clue for category 5, row 5","answer":"Answer 1-5-5"}
+          {"clue":"Board 1 clue for category 5, row 1","image":"","answer":"Answer 1-5-1","answerImage":""},
+          {"clue":"Board 1 clue for category 5, row 2","image":"","answer":"Answer 1-5-2","answerImage":""},
+          {"clue":"Board 1 clue for category 5, row 3","image":"","answer":"Answer 1-5-3","answerImage":""},
+          {"clue":"Board 1 clue for category 5, row 4","image":"","answer":"Answer 1-5-4","answerImage":""},
+          {"clue":"Board 1 clue for category 5, row 5","image":"","answer":"Answer 1-5-5","answerImage":""}
         ]
       }
     ],
@@ -56,51 +56,51 @@
       {
         "name": "Category 1",
         "clues": [
-          {"clue":"Board 2 clue for category 1, row 1","answer":"Answer 2-1-1"},
-          {"clue":"Board 2 clue for category 1, row 2","answer":"Answer 2-1-2"},
-          {"clue":"Board 2 clue for category 1, row 3","answer":"Answer 2-1-3"},
-          {"clue":"Board 2 clue for category 1, row 4","answer":"Answer 2-1-4"},
-          {"clue":"Board 2 clue for category 1, row 5","answer":"Answer 2-1-5"}
+          {"clue":"Board 2 clue for category 1, row 1","image":"","answer":"Answer 2-1-1","answerImage":""},
+          {"clue":"Board 2 clue for category 1, row 2","image":"","answer":"Answer 2-1-2","answerImage":""},
+          {"clue":"Board 2 clue for category 1, row 3","image":"","answer":"Answer 2-1-3","answerImage":""},
+          {"clue":"Board 2 clue for category 1, row 4","image":"","answer":"Answer 2-1-4","answerImage":""},
+          {"clue":"Board 2 clue for category 1, row 5","image":"","answer":"Answer 2-1-5","answerImage":""}
         ]
       },
       {
         "name": "Category 2",
         "clues": [
-          {"clue":"Board 2 clue for category 2, row 1","answer":"Answer 2-2-1"},
-          {"clue":"Board 2 clue for category 2, row 2","answer":"Answer 2-2-2"},
-          {"clue":"Board 2 clue for category 2, row 3","answer":"Answer 2-2-3"},
-          {"clue":"Board 2 clue for category 2, row 4","answer":"Answer 2-2-4"},
-          {"clue":"Board 2 clue for category 2, row 5","answer":"Answer 2-2-5"}
+          {"clue":"Board 2 clue for category 2, row 1","image":"","answer":"Answer 2-2-1","answerImage":""},
+          {"clue":"Board 2 clue for category 2, row 2","image":"","answer":"Answer 2-2-2","answerImage":""},
+          {"clue":"Board 2 clue for category 2, row 3","image":"","answer":"Answer 2-2-3","answerImage":""},
+          {"clue":"Board 2 clue for category 2, row 4","image":"","answer":"Answer 2-2-4","answerImage":""},
+          {"clue":"Board 2 clue for category 2, row 5","image":"","answer":"Answer 2-2-5","answerImage":""}
         ]
       },
       {
         "name": "Category 3",
         "clues": [
-          {"clue":"Board 2 clue for category 3, row 1","answer":"Answer 2-3-1"},
-          {"clue":"Board 2 clue for category 3, row 2","answer":"Answer 2-3-2"},
-          {"clue":"Board 2 clue for category 3, row 3","answer":"Answer 2-3-3"},
-          {"clue":"Board 2 clue for category 3, row 4","answer":"Answer 2-3-4"},
-          {"clue":"Board 2 clue for category 3, row 5","answer":"Answer 2-3-5"}
+          {"clue":"Board 2 clue for category 3, row 1","image":"","answer":"Answer 2-3-1","answerImage":""},
+          {"clue":"Board 2 clue for category 3, row 2","image":"","answer":"Answer 2-3-2","answerImage":""},
+          {"clue":"Board 2 clue for category 3, row 3","image":"","answer":"Answer 2-3-3","answerImage":""},
+          {"clue":"Board 2 clue for category 3, row 4","image":"","answer":"Answer 2-3-4","answerImage":""},
+          {"clue":"Board 2 clue for category 3, row 5","image":"","answer":"Answer 2-3-5","answerImage":""}
         ]
       },
       {
         "name": "Category 4",
         "clues": [
-          {"clue":"Board 2 clue for category 4, row 1","answer":"Answer 2-4-1"},
-          {"clue":"Board 2 clue for category 4, row 2","answer":"Answer 2-4-2"},
-          {"clue":"Board 2 clue for category 4, row 3","answer":"Answer 2-4-3"},
-          {"clue":"Board 2 clue for category 4, row 4","answer":"Answer 2-4-4"},
-          {"clue":"Board 2 clue for category 4, row 5","answer":"Answer 2-4-5"}
+          {"clue":"Board 2 clue for category 4, row 1","image":"","answer":"Answer 2-4-1","answerImage":""},
+          {"clue":"Board 2 clue for category 4, row 2","image":"","answer":"Answer 2-4-2","answerImage":""},
+          {"clue":"Board 2 clue for category 4, row 3","image":"","answer":"Answer 2-4-3","answerImage":""},
+          {"clue":"Board 2 clue for category 4, row 4","image":"","answer":"Answer 2-4-4","answerImage":""},
+          {"clue":"Board 2 clue for category 4, row 5","image":"","answer":"Answer 2-4-5","answerImage":""}
         ]
       },
       {
         "name": "Category 5",
         "clues": [
-          {"clue":"Board 2 clue for category 5, row 1","answer":"Answer 2-5-1"},
-          {"clue":"Board 2 clue for category 5, row 2","answer":"Answer 2-5-2"},
-          {"clue":"Board 2 clue for category 5, row 3","answer":"Answer 2-5-3"},
-          {"clue":"Board 2 clue for category 5, row 4","answer":"Answer 2-5-4"},
-          {"clue":"Board 2 clue for category 5, row 5","answer":"Answer 2-5-5"}
+          {"clue":"Board 2 clue for category 5, row 1","image":"","answer":"Answer 2-5-1","answerImage":""},
+          {"clue":"Board 2 clue for category 5, row 2","image":"","answer":"Answer 2-5-2","answerImage":""},
+          {"clue":"Board 2 clue for category 5, row 3","image":"","answer":"Answer 2-5-3","answerImage":""},
+          {"clue":"Board 2 clue for category 5, row 4","image":"","answer":"Answer 2-5-4","answerImage":""},
+          {"clue":"Board 2 clue for category 5, row 5","image":"","answer":"Answer 2-5-5","answerImage":""}
         ]
       }
     ]
